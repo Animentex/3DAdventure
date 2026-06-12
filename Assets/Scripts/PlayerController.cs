@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] float walkSpeed = 3.5f;
     [SerializeField] float runSpeed = 5.5f;
     [SerializeField] float sprintSpeed = 8f;
 
@@ -25,7 +24,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform cameraTransform;
 
     CharacterController controller;
-
     PlayerInputActions input;
 
     Vector2 moveInput;
@@ -38,7 +36,6 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         controller = GetComponent<CharacterController>();
-
         input = new PlayerInputActions();
     }
 
@@ -77,56 +74,65 @@ public class PlayerController : MonoBehaviour
     }
 
     void Move()
+{
+    Vector3 inputDir =
+        new Vector3(moveInput.x, 0, moveInput.y);
+
+    Vector3 camForward = cameraTransform.forward;
+    Vector3 camRight = cameraTransform.right;
+
+    camForward.y = 0;
+    camRight.y = 0;
+
+    camForward.Normalize();
+    camRight.Normalize();
+
+    Vector3 moveDirection =
+        camForward * inputDir.z +
+        camRight * inputDir.x;
+
+    float speed = 0f;
+
+    if (moveInput.magnitude > 0.1f)
+        speed = runSpeed;
+
+    if (sprintHeld)
     {
-        Vector3 inputDir =
-            new Vector3(moveInput.x, 0, moveInput.y);
-
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0;
-        camRight.y = 0;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 moveDirection =
-            camForward * inputDir.z +
-            camRight * inputDir.x;
-
-        float speed = 0f;
-
-        if (moveInput.magnitude > 0.1f)
-            speed = runSpeed;
-
-        if (sprintHeld)
-            speed = sprintSpeed;
-
+        // Automatically exit crouch when sprinting
         if (crouched)
-            speed *= 0.5f;
-
-        Vector3 targetMove =
-            moveDirection.normalized * speed;
-
-        currentMove = Vector3.Lerp(
-            currentMove,
-            targetMove,
-            acceleration * Time.deltaTime);
-
-        controller.Move(currentMove * Time.deltaTime);
-
-        if (moveDirection.sqrMagnitude > 0.01f)
         {
-            Quaternion targetRotation =
-                Quaternion.LookRotation(moveDirection);
-
-            transform.rotation =
-                Quaternion.Slerp(
-                    transform.rotation,
-                    targetRotation,
-                    rotationSpeed * Time.deltaTime);
+            crouched = false;
+            controller.height = standingHeight;
         }
+
+        speed = sprintSpeed;
     }
+
+    if (crouched)
+        speed *= 0.5f;
+
+    Vector3 targetMove =
+        moveDirection.normalized * speed;
+
+    currentMove = Vector3.Lerp(
+        currentMove,
+        targetMove,
+        acceleration * Time.deltaTime);
+
+    controller.Move(currentMove * Time.deltaTime);
+
+    if (moveDirection.sqrMagnitude > 0.01f)
+    {
+        Quaternion targetRotation =
+            Quaternion.LookRotation(moveDirection);
+
+        transform.rotation =
+            Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime);
+    }
+}
 
     void Jump()
     {
@@ -148,12 +154,12 @@ public class PlayerController : MonoBehaviour
     }
 
     void ToggleCrouch()
-    {
-        crouched = !crouched;
+{
+    crouched = !crouched;
 
-        controller.height =
-            crouched
-                ? crouchHeight
-                : standingHeight;
-    }
+    controller.height =
+        crouched
+            ? crouchHeight
+            : standingHeight;
+}
 }
