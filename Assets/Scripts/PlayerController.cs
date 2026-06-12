@@ -1,84 +1,159 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    public float walkSpeed = 2f;
-    public float runSpeed = 4f;
-    public float sprintSpeed = 6f;
-    public float crouchSpeed = 1f;
+    [Header("Movement")]
+    [SerializeField] float walkSpeed = 3.5f;
+    [SerializeField] float runSpeed = 5.5f;
+    [SerializeField] float sprintSpeed = 8f;
 
-    public float jumpHeight = 1.5f;
-    public float gravity = -9.81f;
+    [Header("Jump")]
+    [SerializeField] float jumpHeight = 1.5f;
+    [SerializeField] float gravity = -25f;
 
-    public CharacterController controller;
+    [Header("Rotation")]
+    [SerializeField] float rotationSpeed = 15f;
+    [SerializeField] float acceleration = 12f;
 
-    private Vector3 velocity;
-    private bool isGrounded;
+    [Header("Crouch")]
+    [SerializeField] float standingHeight = 2f;
+    [SerializeField] float crouchHeight = 1f;
 
-    private bool isCrouching = false;
-    private float originalHeight;
-    public float crouchHeight = 1f;
+    [Header("References")]
+    [SerializeField] Transform cameraTransform;
 
-    void Start()
+    CharacterController controller;
+
+    PlayerInputActions input;
+
+    Vector2 moveInput;
+    Vector3 velocity;
+    Vector3 currentMove;
+
+    bool sprintHeld;
+    bool crouched;
+
+    void Awake()
     {
-        if (!controller)
-            controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
 
-        originalHeight = controller.height;
+        input = new PlayerInputActions();
+    }
+
+    void OnEnable()
+    {
+        input.Enable();
+
+        input.Player.Move.performed += ctx =>
+            moveInput = ctx.ReadValue<Vector2>();
+
+        input.Player.Move.canceled += ctx =>
+            moveInput = Vector2.zero;
+
+        input.Player.Sprint.performed += _ =>
+            sprintHeld = true;
+
+        input.Player.Sprint.canceled += _ =>
+            sprintHeld = false;
+
+        input.Player.Jump.performed += _ =>
+            Jump();
+
+        input.Player.Crouch.performed += _ =>
+            ToggleCrouch();
+    }
+
+    void OnDisable()
+    {
+        input.Disable();
     }
 
     void Update()
     {
-        // Ground check
-        isGrounded = controller.isGrounded;
-        if (isGrounded && velocity.y < 0)
-            velocity.y = -2f; // Small downward force to stick to ground
+        Move();
+        ApplyGravity();
+    }
 
-        // Get input
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+    void Move()
+    {
+        Vector3 inputDir =
+            new Vector3(moveInput.x, 0, moveInput.y);
 
-        // Determine movement speed
-        float speed = walkSpeed;
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
 
-        if (Input.GetKey(KeyCode.LeftControl))       // Sprint when holding Left Control
-        {
-            speed = sprintSpeed;
-        }
-        else if (Input.GetKey(KeyCode.LeftShift))    // Run when holding Left Shift
-        {
+        camForward.y = 0;
+        camRight.y = 0;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDirection =
+            camForward * inputDir.z +
+            camRight * inputDir.x;
+
+        float speed = 0f;
+
+        if (moveInput.magnitude > 0.1f)
             speed = runSpeed;
-        }
 
-        if (isCrouching)
-            speed = crouchSpeed;
+        if (sprintHeld)
+            speed = sprintSpeed;
 
-        // Movement direction relative to player forward
-        Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * speed * Time.deltaTime);
+        if (crouched)
+            speed *= 0.5f;
 
-        // Jumping
-        if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching)
+        Vector3 targetMove =
+            moveDirection.normalized * speed;
+
+        currentMove = Vector3.Lerp(
+            currentMove,
+            targetMove,
+            acceleration * Time.deltaTime);
+
+        controller.Move(currentMove * Time.deltaTime);
+
+        if (moveDirection.sqrMagnitude > 0.01f)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
+            Quaternion targetRotation =
+                Quaternion.LookRotation(moveDirection);
 
-        // Apply gravity
+            transform.rotation =
+                Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    void Jump()
+    {
+        if (!controller.isGrounded)
+            return;
+
+        velocity.y =
+            Mathf.Sqrt(jumpHeight * -2f * gravity);
+    }
+
+    void ApplyGravity()
+    {
+        if (controller.isGrounded && velocity.y < 0)
+            velocity.y = -2f;
+
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
 
-        // Crouch toggle
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            isCrouching = !isCrouching;
-            if (isCrouching)
-            {
-                controller.height = crouchHeight;
-            }
-            else
-            {
-                controller.height = originalHeight;
-            }
-        }
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void ToggleCrouch()
+    {
+        crouched = !crouched;
+
+        controller.height =
+            crouched
+                ? crouchHeight
+                : standingHeight;
     }
 }
