@@ -16,8 +16,10 @@ public class ThirdPersonCamera : MonoBehaviour
     public float maxPitch = 60f;
 
     [Header("Collision")]
+    [Tooltip("What layers the camera can collide with.")]
     public LayerMask collisionMask;
     public float collisionRadius = 0.2f;
+    [Tooltip("The distance to the player when zoomed in.")]
     public float collisionOffset = 0.1f;
 
     [Tooltip("How quickly the camera moves toward the player when obstructed.")]
@@ -82,7 +84,6 @@ public class ThirdPersonCamera : MonoBehaviour
 
         if (targetDistance < currentDistance)
         {
-            // Move camera inward quickly
             currentDistance = Mathf.MoveTowards(
                 currentDistance,
                 targetDistance,
@@ -90,7 +91,6 @@ public class ThirdPersonCamera : MonoBehaviour
         }
         else
         {
-            // Move camera outward smoothly
             currentDistance = Mathf.MoveTowards(
                 currentDistance,
                 targetDistance,
