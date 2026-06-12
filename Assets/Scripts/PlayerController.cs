@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [Header("Rotation")]
     [SerializeField] float rotationSpeed = 15f;
     [SerializeField] float acceleration = 12f;
+    [SerializeField] Transform modelTransform;
 
     [Header("Crouch")]
     [SerializeField] float standingHeight = 2f;
@@ -24,6 +25,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float freeFallAirControl = 20f;
     [SerializeField] float diveGravityMultiplier = 2.5f;
     [SerializeField] float diveSpeedMultiplier = 1.5f;
+    [SerializeField] float freeFallAngle = 90f;
+    [SerializeField] float diveAngle = 180f;
+    [SerializeField] float poseRotationSpeed = 8f;
 
     [Header("References")]
     [SerializeField] Transform cameraTransform;
@@ -79,7 +83,11 @@ public class PlayerController : MonoBehaviour
         };
 
         input.Player.Dive.canceled += _ =>
-            diving = false;
+    {
+        diving = false;
+
+        velocity.y *= 0.5f;
+    };
     }
 
     void OnDisable()
@@ -91,6 +99,7 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         ApplyGravity();
+        UpdateFallPose();
     }
 
     void Move()
@@ -161,13 +170,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void UpdateFallPose()
+    {
+    float targetPitch = 0f;
+
+    if (freeFalling)
+        targetPitch = freeFallAngle;
+
+    if (diving)
+        targetPitch = diveAngle;
+
+    Quaternion targetRotation =
+        Quaternion.Euler(targetPitch, 0f, 0f);
+
+    modelTransform.localRotation =
+        Quaternion.Slerp(
+            modelTransform.localRotation,
+            targetRotation,
+            poseRotationSpeed * Time.deltaTime);
+    }
+
     void EnterFreeFall()
     {
         if (controller.isGrounded)
             return;
 
         freeFalling = true;
-        Debug.Log("Is free falling");
     }
 
     void Jump()
@@ -184,7 +212,6 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded)
         {
             freeFalling = false;
-            Debug.Log("Is not diving");
             diving = false;
 
             if (velocity.y < 0)
