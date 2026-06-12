@@ -20,13 +20,23 @@ public class ThirdPersonCamera : MonoBehaviour
     public float collisionRadius = 0.2f;
     public float collisionOffset = 0.1f;
 
+    [Tooltip("How quickly the camera moves toward the player when obstructed.")]
+    public float collisionInSpeed = 30f;
+
+    [Tooltip("How quickly the camera returns to normal distance.")]
+    public float collisionOutSpeed = 8f;
+
     float yaw;
     float pitch = 15f;
+
+    float currentDistance;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        currentDistance = distance;
     }
 
     void LateUpdate()
@@ -70,9 +80,26 @@ public class ThirdPersonCamera : MonoBehaviour
                     0.1f);
         }
 
+        if (targetDistance < currentDistance)
+        {
+            // Move camera inward quickly
+            currentDistance = Mathf.MoveTowards(
+                currentDistance,
+                targetDistance,
+                collisionInSpeed * Time.deltaTime);
+        }
+        else
+        {
+            // Move camera outward smoothly
+            currentDistance = Mathf.MoveTowards(
+                currentDistance,
+                targetDistance,
+                collisionOutSpeed * Time.deltaTime);
+        }
+
         Vector3 finalPosition =
             pivotPosition +
-            direction * targetDistance;
+            direction * currentDistance;
 
         transform.position = finalPosition;
         transform.rotation = rotation;
