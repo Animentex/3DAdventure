@@ -20,6 +20,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float standingHeight = 2f;
     [SerializeField] float crouchHeight = 1f;
 
+    [Header("Free Fall")]
+    [SerializeField] float freeFallAirControl = 20f;
+    [SerializeField] float diveGravityMultiplier = 2.5f;
+    [SerializeField] float diveSpeedMultiplier = 1.5f;
+
     [Header("References")]
     [SerializeField] Transform cameraTransform;
 
@@ -32,6 +37,9 @@ public class PlayerController : MonoBehaviour
 
     bool sprintHeld;
     bool crouched;
+
+    bool freeFalling;
+    bool diving;
 
     void Awake()
     {
@@ -60,6 +68,18 @@ public class PlayerController : MonoBehaviour
 
         input.Player.Crouch.performed += _ =>
             ToggleCrouch();
+
+        input.Player.FreeFall.performed += _ =>
+            EnterFreeFall();
+
+        input.Player.Dive.performed += _ =>
+        {
+            if (freeFalling)
+                diving = true;
+        };
+
+        input.Player.Dive.canceled += _ =>
+            diving = false;
     }
 
     void OnDisable()
@@ -74,65 +94,81 @@ public class PlayerController : MonoBehaviour
     }
 
     void Move()
-{
-    Vector3 inputDir =
-        new Vector3(moveInput.x, 0, moveInput.y);
-
-    Vector3 camForward = cameraTransform.forward;
-    Vector3 camRight = cameraTransform.right;
-
-    camForward.y = 0;
-    camRight.y = 0;
-
-    camForward.Normalize();
-    camRight.Normalize();
-
-    Vector3 moveDirection =
-        camForward * inputDir.z +
-        camRight * inputDir.x;
-
-    float speed = 0f;
-
-    if (moveInput.magnitude > 0.1f)
-        speed = runSpeed;
-
-    if (sprintHeld)
     {
-        // Automatically exit crouch when sprinting
-        if (crouched)
+        Vector3 inputDir =
+            new Vector3(moveInput.x, 0, moveInput.y);
+
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
+
+        camForward.y = 0;
+        camRight.y = 0;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDirection =
+            camForward * inputDir.z +
+            camRight * inputDir.x;
+
+        float speed = 0f;
+
+        if (moveInput.magnitude > 0.1f)
+            speed = runSpeed;
+
+        if (sprintHeld)
         {
-            crouched = false;
-            controller.height = standingHeight;
+            if (crouched)
+            {
+                crouched = false;
+                controller.height = standingHeight;
+            }
+
+            speed = sprintSpeed;
         }
 
-        speed = sprintSpeed;
+        if (crouched)
+            speed *= 0.5f;
+
+        if (freeFalling && diving)
+            speed *= diveSpeedMultiplier;
+
+        Vector3 targetMove =
+            moveDirection.normalized * speed;
+
+        float moveAcceleration =
+            freeFalling
+                ? freeFallAirControl
+                : acceleration;
+
+        currentMove = Vector3.Lerp(
+            currentMove,
+            targetMove,
+            moveAcceleration * Time.deltaTime);
+
+        controller.Move(currentMove * Time.deltaTime);
+
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(moveDirection);
+
+            transform.rotation =
+                Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    rotationSpeed * Time.deltaTime);
+        }
     }
 
-    if (crouched)
-        speed *= 0.5f;
-
-    Vector3 targetMove =
-        moveDirection.normalized * speed;
-
-    currentMove = Vector3.Lerp(
-        currentMove,
-        targetMove,
-        acceleration * Time.deltaTime);
-
-    controller.Move(currentMove * Time.deltaTime);
-
-    if (moveDirection.sqrMagnitude > 0.01f)
+    void EnterFreeFall()
     {
-        Quaternion targetRotation =
-            Quaternion.LookRotation(moveDirection);
+        if (controller.isGrounded)
+            return;
 
-        transform.rotation =
-            Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                rotationSpeed * Time.deltaTime);
+        freeFalling = true;
+        Debug.Log("Is free falling");
     }
-}
 
     void Jump()
     {
@@ -145,21 +181,36 @@ public class PlayerController : MonoBehaviour
 
     void ApplyGravity()
     {
-        if (controller.isGrounded && velocity.y < 0)
-            velocity.y = -2f;
+        if (controller.isGrounded)
+        {
+            freeFalling = false;
+            Debug.Log("Is not diving");
+            diving = false;
 
-        velocity.y += gravity * Time.deltaTime;
+            if (velocity.y < 0)
+                velocity.y = -2f;
+        }
+
+        float gravityMultiplier =
+            (freeFalling && diving)
+                ? diveGravityMultiplier
+                : 1f;
+
+        velocity.y +=
+            gravity *
+            gravityMultiplier *
+            Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
     }
 
     void ToggleCrouch()
-{
-    crouched = !crouched;
+    {
+        crouched = !crouched;
 
-    controller.height =
-        crouched
-            ? crouchHeight
-            : standingHeight;
-}
+        controller.height =
+            crouched
+                ? crouchHeight
+                : standingHeight;
+    }
 }
