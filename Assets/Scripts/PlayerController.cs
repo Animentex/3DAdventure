@@ -22,9 +22,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float crouchHeight = 1f;
 
     [Header("Free Fall")]
+    [Header("Free Fall")]
     [SerializeField] float freeFallAirControl = 20f;
     [SerializeField] float diveGravityMultiplier = 2.5f;
-    [SerializeField] float diveSpeedMultiplier = 1.5f;
+
+    [SerializeField] float freeFallSpeedMultiplier = 1.2f;
+    [SerializeField] float diveSpeedMultiplier = 0.5f;
+
     [SerializeField] float freeFallAngle = 90f;
     [SerializeField] float diveAngle = 180f;
     [SerializeField] float poseRotationSpeed = 8f;
@@ -137,10 +141,15 @@ public class PlayerController : MonoBehaviour
         }
 
         if (crouched)
-            speed *= 0.5f;
+        speed *= 0.5f;
 
+        // Slightly increased steering while free falling
+        if (freeFalling)
+        speed *= freeFallSpeedMultiplier;
+
+        // Reduced steering while diving
         if (freeFalling && diving)
-            speed *= diveSpeedMultiplier;
+        speed *= diveSpeedMultiplier;
 
         Vector3 targetMove =
             moveDirection.normalized * speed;
