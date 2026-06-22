@@ -37,22 +37,34 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public GameObject exploration;
+    public GameObject combatArena;
+
+
     public void StartCombat()
     {
-        inCombat = true;
+       inCombat = true;
 
-        Debug.Log("Entering Combat");
+       exploration.SetActive(false);
+       combatArena.SetActive(true);
 
-        player.GetComponent<PlayerController>().enabled = false;
-    }
+       player.GetComponent<PlayerController>().enabled = false;
+
+       //player.transform.position =
+       //playerSpawn.position;
+
+       //enemy.transform.position =
+       //enemySpawn.position;
+}
 
 
     public void ExitCombat()
-    {
-        inCombat = false;
+   {
+       inCombat = false;
 
-        Debug.Log("Leaving Combat");
+       combatArena.SetActive(false);
+       exploration.SetActive(true);
 
-        player.GetComponent<PlayerController>().enabled = true;
-    }
+       player.GetComponent<PlayerController>().enabled = true;
+}
 }
