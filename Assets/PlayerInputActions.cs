@@ -154,6 +154,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CombatTest"",
+                    ""type"": ""Button"",
+                    ""id"": ""d176275e-4c19-4c6e-a59c-1c9c4072deec"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -354,6 +363,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""FreeFall"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0fa15152-2955-4bd8-b013-ee82e800b501"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CombatTest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""56e10433-dbf0-4dc3-99dc-141838ade3a8"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CombatTest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -369,6 +400,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Dive = m_Player.FindAction("Dive", throwIfNotFound: true);
         m_Player_FreeFall = m_Player.FindAction("FreeFall", throwIfNotFound: true);
+        m_Player_CombatTest = m_Player.FindAction("CombatTest", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -456,6 +488,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Dive;
     private readonly InputAction m_Player_FreeFall;
+    private readonly InputAction m_Player_CombatTest;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -495,6 +528,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/FreeFall".
         /// </summary>
         public InputAction @FreeFall => m_Wrapper.m_Player_FreeFall;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CombatTest".
+        /// </summary>
+        public InputAction @CombatTest => m_Wrapper.m_Player_CombatTest;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -542,6 +579,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @FreeFall.started += instance.OnFreeFall;
             @FreeFall.performed += instance.OnFreeFall;
             @FreeFall.canceled += instance.OnFreeFall;
+            @CombatTest.started += instance.OnCombatTest;
+            @CombatTest.performed += instance.OnCombatTest;
+            @CombatTest.canceled += instance.OnCombatTest;
         }
 
         /// <summary>
@@ -574,6 +614,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @FreeFall.started -= instance.OnFreeFall;
             @FreeFall.performed -= instance.OnFreeFall;
             @FreeFall.canceled -= instance.OnFreeFall;
+            @CombatTest.started -= instance.OnCombatTest;
+            @CombatTest.performed -= instance.OnCombatTest;
+            @CombatTest.canceled -= instance.OnCombatTest;
         }
 
         /// <summary>
@@ -663,5 +706,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFreeFall(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CombatTest" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCombatTest(InputAction.CallbackContext context);
     }
 }
