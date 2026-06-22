@@ -22,14 +22,36 @@ public class GameManager : MonoBehaviour
     {
         input.Enable();
 
+
         input.Player.CombatTest.performed += _ =>
         {
             if (!inCombat)
-                StartCombat();                
+                StartCombat();
             else
                 ExitCombat();
         };
-    }
+
+
+        input.Player.CombatProgress.performed += _ =>
+        {
+        if (inCombat)
+            CombatManager.Instance.ProgressTurn();
+    };
+
+
+    input.Player.VictoryTest.performed += _ =>
+    {
+        if (inCombat)
+            CombatManager.Instance.Victory();
+    };
+
+
+    input.Player.DefeatTest.performed += _ =>
+    {
+        if (inCombat)
+            CombatManager.Instance.Defeat();
+    };
+}
 
     void OnDisable()
     {

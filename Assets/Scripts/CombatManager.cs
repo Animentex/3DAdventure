@@ -18,13 +18,7 @@ public class CombatManager : MonoBehaviour
     public CombatState currentState;
 
 
-    [Header("Combat References")]
-    public Transform playerBattlePosition;
-    public Transform enemyBattlePosition;
-
-
     GameObject currentEnemy;
-
 
 
     void Awake()
@@ -33,30 +27,13 @@ public class CombatManager : MonoBehaviour
     }
 
 
-
     public void StartBattle(GameObject enemy)
     {
         currentEnemy = enemy;
 
         Debug.Log("Battle Started!");
 
-        currentState = CombatState.PlayerTurn;
-
-
-        MoveCombatants();
-
-
         BeginPlayerTurn();
-    }
-
-
-
-    void MoveCombatants()
-    {
-        // Temporary movement
-        // Later we replace this with animations
-
-        Debug.Log("Moving fighters into arena");
     }
 
 
@@ -79,13 +56,46 @@ public class CombatManager : MonoBehaviour
 
 
 
+    public void ProgressTurn()
+    {
+        if (currentState == CombatState.PlayerTurn)
+        {
+            BeginEnemyTurn();
+        }
+        else if (currentState == CombatState.EnemyTurn)
+        {
+            BeginPlayerTurn();
+        }
+    }
+
+
+
+    public void Victory()
+    {
+        currentState = CombatState.Victory;
+
+        Debug.Log("Victory!");
+    }
+
+
+
+    public void Defeat()
+    {
+        currentState = CombatState.Defeat;
+
+        Debug.Log("Defeat!");
+    }
+
+
+
     public void EndBattle()
     {
+        Debug.Log("Combat Ended");
+
         currentState = CombatState.None;
 
         currentEnemy = null;
 
-
-        Debug.Log("Battle Ended");
+        GameManager.Instance.ExitCombat();
     }
 }
