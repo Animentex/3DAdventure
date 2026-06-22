@@ -22,6 +22,15 @@ public class GameManager : MonoBehaviour
     {
         input.Enable();
 
+        input.Player.Attack.performed += _ =>
+    {
+        if(CombatManager.Instance.currentState 
+           == CombatManager.CombatState.PlayerTurn)
+        {
+            CombatActions.Instance.BasicAttack();
+        }
+    };
+
 
         input.Player.CombatTest.performed += _ =>
         {
@@ -36,15 +45,40 @@ public class GameManager : MonoBehaviour
         {
         if (inCombat)
             CombatManager.Instance.ProgressTurn();
-    };
+        };
 
 
-    input.Player.VictoryTest.performed += _ =>
-    {
-        if (inCombat)
+        input.Player.VictoryTest.performed += _ =>
+        {
+            if (inCombat)
             CombatManager.Instance.Victory();
-    };
+        };
+        input.Player.Dodge.performed += _ =>
+        {
+           if(CombatManager.Instance.currentState ==
+           CombatManager.CombatState.ReactionWindow)
+           {
+               CombatManager.Instance.Dodge();
+           }
+        };
 
+        input.Player.Counter.performed += _ =>
+        {
+           if(CombatManager.Instance.currentState ==
+           CombatManager.CombatState.ReactionWindow)
+           {
+               CombatManager.Instance.Counter();
+           }
+        };
+
+        input.Player.Parry.performed += _ =>
+        {
+           if(CombatManager.Instance.currentState ==
+           CombatManager.CombatState.ReactionWindow)
+           {
+               CombatManager.Instance.Parry();
+           }
+        };
 
     input.Player.DefeatTest.performed += _ =>
     {
