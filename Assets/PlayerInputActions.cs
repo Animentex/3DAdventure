@@ -163,6 +163,33 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CombatProgress"",
+                    ""type"": ""Button"",
+                    ""id"": ""ebfb12db-d327-463d-82c9-30724b262bc4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""VictoryTest"",
+                    ""type"": ""Button"",
+                    ""id"": ""ffc58d48-1a6e-460a-9c4e-0f0479cd6bbc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DefeatTest"",
+                    ""type"": ""Button"",
+                    ""id"": ""5562d000-46a9-4aa4-8639-b71ad2a80af4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -385,6 +412,39 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""CombatTest"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a0b5db78-ad0d-4c09-b3b5-816821e524f6"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CombatProgress"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3aca27f8-a028-431a-a30f-bf84cba38364"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VictoryTest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7b48d31c-8e2a-4a87-a2e3-a56b65556a96"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DefeatTest"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -401,6 +461,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Dive = m_Player.FindAction("Dive", throwIfNotFound: true);
         m_Player_FreeFall = m_Player.FindAction("FreeFall", throwIfNotFound: true);
         m_Player_CombatTest = m_Player.FindAction("CombatTest", throwIfNotFound: true);
+        m_Player_CombatProgress = m_Player.FindAction("CombatProgress", throwIfNotFound: true);
+        m_Player_VictoryTest = m_Player.FindAction("VictoryTest", throwIfNotFound: true);
+        m_Player_DefeatTest = m_Player.FindAction("DefeatTest", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -489,6 +552,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dive;
     private readonly InputAction m_Player_FreeFall;
     private readonly InputAction m_Player_CombatTest;
+    private readonly InputAction m_Player_CombatProgress;
+    private readonly InputAction m_Player_VictoryTest;
+    private readonly InputAction m_Player_DefeatTest;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -532,6 +598,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/CombatTest".
         /// </summary>
         public InputAction @CombatTest => m_Wrapper.m_Player_CombatTest;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CombatProgress".
+        /// </summary>
+        public InputAction @CombatProgress => m_Wrapper.m_Player_CombatProgress;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/VictoryTest".
+        /// </summary>
+        public InputAction @VictoryTest => m_Wrapper.m_Player_VictoryTest;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/DefeatTest".
+        /// </summary>
+        public InputAction @DefeatTest => m_Wrapper.m_Player_DefeatTest;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -582,6 +660,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @CombatTest.started += instance.OnCombatTest;
             @CombatTest.performed += instance.OnCombatTest;
             @CombatTest.canceled += instance.OnCombatTest;
+            @CombatProgress.started += instance.OnCombatProgress;
+            @CombatProgress.performed += instance.OnCombatProgress;
+            @CombatProgress.canceled += instance.OnCombatProgress;
+            @VictoryTest.started += instance.OnVictoryTest;
+            @VictoryTest.performed += instance.OnVictoryTest;
+            @VictoryTest.canceled += instance.OnVictoryTest;
+            @DefeatTest.started += instance.OnDefeatTest;
+            @DefeatTest.performed += instance.OnDefeatTest;
+            @DefeatTest.canceled += instance.OnDefeatTest;
         }
 
         /// <summary>
@@ -617,6 +704,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @CombatTest.started -= instance.OnCombatTest;
             @CombatTest.performed -= instance.OnCombatTest;
             @CombatTest.canceled -= instance.OnCombatTest;
+            @CombatProgress.started -= instance.OnCombatProgress;
+            @CombatProgress.performed -= instance.OnCombatProgress;
+            @CombatProgress.canceled -= instance.OnCombatProgress;
+            @VictoryTest.started -= instance.OnVictoryTest;
+            @VictoryTest.performed -= instance.OnVictoryTest;
+            @VictoryTest.canceled -= instance.OnVictoryTest;
+            @DefeatTest.started -= instance.OnDefeatTest;
+            @DefeatTest.performed -= instance.OnDefeatTest;
+            @DefeatTest.canceled -= instance.OnDefeatTest;
         }
 
         /// <summary>
@@ -713,5 +809,26 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCombatTest(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CombatProgress" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCombatProgress(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "VictoryTest" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnVictoryTest(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DefeatTest" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDefeatTest(InputAction.CallbackContext context);
     }
 }

@@ -77,6 +77,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CombatProgress",
+                    "type": "Button",
+                    "id": "ebfb12db-d327-463d-82c9-30724b262bc4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "VictoryTest",
+                    "type": "Button",
+                    "id": "ffc58d48-1a6e-460a-9c4e-0f0479cd6bbc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DefeatTest",
+                    "type": "Button",
+                    "id": "5562d000-46a9-4aa4-8639-b71ad2a80af4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -297,6 +324,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "CombatTest",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a0b5db78-ad0d-4c09-b3b5-816821e524f6",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CombatProgress",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3aca27f8-a028-431a-a30f-bf84cba38364",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VictoryTest",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b48d31c-8e2a-4a87-a2e3-a56b65556a96",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DefeatTest",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -41,14 +41,19 @@ public class GameManager : MonoBehaviour
     public GameObject combatArena;
 
 
-    public void StartCombat()
+    public void StartCombat(GameObject enemy = null)
     {
-       inCombat = true;
+        inCombat = true;
 
-       exploration.SetActive(false);
-       combatArena.SetActive(true);
 
-       player.GetComponent<PlayerController>().enabled = false;
+        exploration.SetActive(false);
+        combatArena.SetActive(true);
+
+
+        player.GetComponent<PlayerController>().enabled = false;
+
+
+        CombatManager.Instance.StartBattle(enemy);
 
        //player.transform.position =
        //playerSpawn.position;
