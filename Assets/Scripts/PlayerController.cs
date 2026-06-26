@@ -178,6 +178,17 @@ public class PlayerController : MonoBehaviour
                     rotationSpeed * Time.deltaTime);
         }
     }
+    public void DisablePlayer()
+    {
+        enabled = false;
+        currentMove = Vector3.zero;
+        velocity = Vector3.zero;
+    }
+
+    public void EnablePlayer()
+    {
+        enabled = true;
+    }
 
     void UpdateFallPose()
     {
