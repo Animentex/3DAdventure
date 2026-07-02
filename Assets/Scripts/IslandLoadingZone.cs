@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SkyDestination : MonoBehaviour
+public class IslandLoadingZone : MonoBehaviour
 {
     public string nextIsland;
 
